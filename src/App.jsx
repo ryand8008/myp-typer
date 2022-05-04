@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Highlight from './Highlight.jsx';
 import styled from 'styled-components';
 
 // a word is averaged to 5 keystrokes
 // (total chars/ 5)/ finishedTime
 
 // const exampleText = 'This is just a test' //19
-const exampleText = 'Barking Up The Wrong Tree Meaning: To make a wrong assumption about something.'
+const exampleText = `Barking Up The Wrong Tree Meaning: To make a wrong assumption about something.`
 function App() {
   const [text, setText] = useState('');
   const [wpm, setWpm] = useState(0);
@@ -19,7 +20,7 @@ function App() {
   const textLength = exampleText.split('').length - 1;
 
   const time = finishedTime /60
-  const rawWpm = (wpm/5)/time
+  const rawWpm = Math.floor((wpm/5)/time)
 
 
 
@@ -53,7 +54,11 @@ const handleTyping = (e) => {
 }
 
 const resetCounter = (e) => {
+  e.preventDefault();
   setKeyPress(0);
+  setStart(false);
+  setTimer(() => 0);
+  clearInterval(countRef.current);
 }
 
 const submitHandler = (e) => {
@@ -66,12 +71,13 @@ const submitHandler = (e) => {
   return (
     <>
     <h1> hello World</h1>
-    <Textbox>Type this: <Highlighted>{exampleText}</Highlighted></Textbox>
+    <Textbox>Type this: <Highlight
+    text={exampleText} highlight={text} /></Textbox>
     <Textbox>Input: {text} </Textbox>
     <div>{finished ? `Completed in ${finishedTime} seconds` : `${timer} seconds have elapsed`}</div>
     <div> Keystrokes => {wpm}  Perfect keystroke count: {exampleText.length}</div>
     <div> {finishedTime ? rawWpm : 0} wpm</div>
-    <div>accuracy: {accuracy}%</div>
+    <div>accuracy: {Math.floor(accuracy)}%</div>
     <div>errors: {finishedTime ? wpm-exampleText.length : 0}</div>
     <button onClick={() => setWpm(0)} >Reset Counter</button>
     <form>
@@ -84,7 +90,7 @@ const submitHandler = (e) => {
   )
 }
 
-const Highlighted = styled.div`
+const Typetext = styled.div`
   // text-color: ${props => props.color ? 'black' : 'red'}
   font-style: italic;
 `
