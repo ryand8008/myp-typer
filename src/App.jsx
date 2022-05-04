@@ -7,12 +7,16 @@ import { idiomList1 } from '../idioms/idiomList1.js'
 // (total chars/ 5)/ finishedTime
 
 // const exampleText = 'This is just a test' //19
-const exampleText = `Barking Up The Wrong Tree Meaning: To make a wrong assumption about something.`
+// const exampleText = `Barking Up The Wrong Tree Meaning: To make a wrong assumption about something.`
+
 function App() {
+
+  let number = 1
   // idiom
-  const title = idiomList1['1'].title;
-  const definition = idiomList1['1'].meaning;
-  const exampleIdiom = idiomList1['1'].examples[0];
+  const [idiomNum, setIdiomNum] = useState(1);
+  const title = idiomList1[idiomNum].title;
+  const definition = idiomList1[idiomNum].meaning;
+  const exampleIdiom = idiomList1[idiomNum].examples[0];
 
   const [text, setText] = useState('');
   const [wpm, setWpm] = useState(0);
@@ -23,6 +27,7 @@ function App() {
   const [typeThis, setTypeThis] = useState(definition)
   const countRef = useRef(null);
 
+  console.log(definition)
 
   const finished = (text === typeThis)
   //calculate average word => keystroke divded by 5
@@ -40,9 +45,12 @@ useEffect(() => {
     setFinishedTime(timer)
     setText('')
     clearInterval(countRef.current)
-
+    // setTypeThis(definition)
   }
-}, [finished, typeThis])
+  if (typeThis !== definition)
+  setTypeThis(exampleIdiom)
+
+}, [finished, typeThis, idiomNum])
 
 const handleTyping = (e) => {
   e.preventDefault();
@@ -59,7 +67,7 @@ const handleTyping = (e) => {
 
 }
 
-const reset = (e) => {
+const resetButton = (e) => {
   e.preventDefault();
   setWpm(0);
   setAccuracy(0);
@@ -71,13 +79,23 @@ const reset = (e) => {
 }
 
 const newIdiom = (e) => {
+  e.preventDefault();
   // change the [#] to random
   // rerender definition
+  let newNumber = Math.floor(Math.random() * 30)
+  setIdiomNum(newNumber)
+
+  setTypeThis( definition)
+
 }
 
 const handleExample = (e) => {
+  if (definition === typeThis) {
+    setTypeThis(() => exampleIdiom)
+  } else {
+    setTypeThis(() => definition)
+  }
   setText('');
-  setTypeThis(exampleIdiom)
   setWpm(0);
   setAccuracy(0);
   setStart(0);
@@ -102,7 +120,7 @@ const submitHandler = (e) => {
     <Container>
 
       <Textbox>Idiom: {title} </Textbox>
-      <Textbox>{typeThis === definition ? 'Definition: ' : 'Example: '} <Highlight
+      <Textbox>{typeThis === definition ? `Definition: `  : `Example: `} <Highlight
       text={typeThis} highlight={text} /> </Textbox>
       <Textbox>Input: {text}
       <div> {finishedTime ? rawWpm : 0} wpm</div>
@@ -110,12 +128,12 @@ const submitHandler = (e) => {
 
       <form>
         <label>
-          <input type="text" name="typer" onChange={(e) => handleTyping(e)} placeholder="start typing..." />
+          <input type="text" name="typer" value={text} autoComplete="off" onChange={(e) => handleTyping(e)} placeholder="start typing..." />
         </label>
 
       </form>
     </Container>
-    <button onClick={(e) => reset(e)} >Reset</button><button onClick={(e) => handleExample(e)}>example</button><button>new idiom</button>
+    <button onClick={(e) => resetButton(e)} >Reset</button><button onClick={(e) => handleExample(e)}>{typeThis === definition ? 'example' : 'definition'}</button><button onClick={(e) => newIdiom(e)}>new idiom</button>
     <div>{finished ? `Completed in ${finishedTime} seconds` : `${timer} seconds have elapsed`}</div>
     <div> Keystrokes => {wpm}  Perfect keystroke count: {typeThis.length}</div>
     <div>accuracy: {Math.floor(accuracy)}%</div>
