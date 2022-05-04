@@ -11,9 +11,8 @@ import { idiomList1 } from '../idioms/idiomList1.js'
 
 function App() {
 
-  let number = 1
   // idiom
-  const [idiomNum, setIdiomNum] = useState(1);
+  const [idiomNum, setIdiomNum] = useState(5);
   const title = idiomList1[idiomNum].title;
   const definition = idiomList1[idiomNum].meaning;
   const exampleIdiom = idiomList1[idiomNum].examples[0];
@@ -27,7 +26,6 @@ function App() {
   const [typeThis, setTypeThis] = useState(definition)
   const countRef = useRef(null);
 
-  console.log(definition)
 
   const finished = (text === typeThis)
   //calculate average word => keystroke divded by 5
@@ -82,10 +80,16 @@ const newIdiom = (e) => {
   e.preventDefault();
   // change the [#] to random
   // rerender definition
-  let newNumber = Math.floor(Math.random() * 30)
+  let newNumber = Math.floor(Math.random() * 80)
   setIdiomNum(newNumber)
 
   setTypeThis( definition)
+  setText('');
+  setWpm(0);
+  setAccuracy(0);
+  setStart(0);
+  setTimer(0);
+  setFinishedTime(0);
 
 }
 
