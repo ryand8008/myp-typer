@@ -12,7 +12,7 @@ function App() {
   // idiom
   const title = idiomList1['1'].title;
   const definition = idiomList1['1'].meaning;
-  const exampleIdiom = idiomList1['1'].examples;
+  const exampleIdiom = idiomList1['1'].examples[0];
 
   const [text, setText] = useState('');
   const [wpm, setWpm] = useState(0);
@@ -24,23 +24,21 @@ function App() {
   const countRef = useRef(null);
 
 
+  const finished = (text === typeThis)
   //calculate average word => keystroke divded by 5
   const textLen = Math.round(typeThis.length / 5);
   const typeThisLen = typeThis.length -1;
   const time = finishedTime /60
   const rawWpm = Math.floor((wpm/5)/time)
 
-
-
-  const splitText = exampleText.split('')
 // create timer + wpm by taking the amount of chars in 'example text'
 // create accuracy by amount of chars / keystroke count
 
-const finished = (text === typeThis)
 useEffect(() => {
   if (finished) {
     setStart(false)
     setFinishedTime(timer)
+    setText('')
     clearInterval(countRef.current)
 
   }
