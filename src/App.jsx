@@ -17,6 +17,7 @@ function App() {
   const definition = idiomList1[idiomNum].meaning;
   const exampleIdiom = idiomList1[idiomNum].examples[0];
 
+  console.log(idiomNum, title)
   const [text, setText] = useState('');
   const [wpm, setWpm] = useState(0);
   const [timer, setTimer] = useState(0);
@@ -33,9 +34,6 @@ function App() {
   const typeThisLen = typeThis.length -1;
   const time = finishedTime /60
   const rawWpm = Math.floor((wpm/5)/time)
-
-// create timer + wpm by taking the amount of chars in 'example text'
-// create accuracy by amount of chars / keystroke count
 
 useEffect(() => {
   if (finished) {
@@ -78,12 +76,10 @@ const resetButton = (e) => {
 
 const newIdiom = (e) => {
   e.preventDefault();
-  // change the [#] to random
-  // rerender definition
   let newNumber = Math.floor(Math.random() * 80)
   setIdiomNum(newNumber)
 
-  setTypeThis( definition)
+  setTypeThis(definition)
   setText('');
   setWpm(0);
   setAccuracy(0);
@@ -109,39 +105,34 @@ const handleExample = (e) => {
 
 }
 
-const submitHandler = (e) => {
-  e.preventDefault()
-  e.stopPropagation();
-  setStart(false)
-}
-
 
   return (
     <>
-    <h1> hello World</h1>
-    <h2>What is an idiom? </h2>
-    <h3>An idiom is a group of words whose meaning is different from the meanings of the individual words -Oxford Dictionary</h3>
-    <Container>
+    <Website>
+    <Containerbox>
+    <h1>What is an idiom? </h1>
+    <h2>An idiom is a group of words whose meaning is different from the meanings of the individual words -Oxford Dictionary</h2>
 
       <Textbox>Idiom: {title} </Textbox>
       <Textbox>{typeThis === definition ? `Definition: `  : `Example: `} <Highlight
       text={typeThis} highlight={text} /> </Textbox>
-      <Textbox>Input: {text}
+      <Textbox>Input: {finishedTime ? 'Complete!' : text}
       <div> {finishedTime ? rawWpm : 0} wpm</div>
       </Textbox>
 
-      <form>
+      <InputField>
         <label>
-          <input type="text" name="typer" value={text} autoComplete="off" onChange={(e) => handleTyping(e)} placeholder="start typing..." />
+          <RealInput type="text" name="typer" value={text} autoComplete="off" onChange={(e) => handleTyping(e)} placeholder="timer starts when you start typing..." />
         </label>
 
-      </form>
-    </Container>
+      </InputField>
     <button onClick={(e) => resetButton(e)} >Reset</button><button onClick={(e) => handleExample(e)}>{typeThis === definition ? 'example' : 'definition'}</button><button onClick={(e) => newIdiom(e)}>new idiom</button>
-    <div>{finished ? `Completed in ${finishedTime} seconds` : `${timer} seconds have elapsed`}</div>
+    <div>{finishedTime ? `Completed in ${finishedTime} seconds` : `${timer} seconds have elapsed`}</div>
     <div> Keystrokes => {wpm}  Perfect keystroke count: {typeThis.length}</div>
     <div>accuracy: {Math.floor(accuracy)}%</div>
     <div>errors: {finishedTime ? wpm-typeThis.length : 0}</div>
+    </Containerbox>
+    </Website>
     </>
   )
 }
@@ -152,15 +143,47 @@ const Typetext = styled.div`
   padding: 10px, 10px, 10px, 10px;
 `
 const Textbox = styled.div`
-  // border: 1px solid red;
+  // border: 1px solid black;
+  border-radius: 5px;
+  height: 30px;
   position: center;
   width: fit-content;
-  padding-left: 10px;
-  padding-right: 10px;
+  margin: 15px, 15px, 15px, 0px;
+  padding: 10px;
+
 `
 
-const Container = styled.div`
-  border: 1px, solid, black;
+const Containerbox = styled.div`
+  border: 2px solid black;
   padding: 20px;
+  width: 800px;
+  border-radius: 5px;
+  margin: 0 auto;
 `;
+
+const InputField = styled.form`
+  // border: 1px solid black;
+  padding: 12px, 20px;
+  width: fit-content;
+  // box-sizing: border-box;
+`
+
+const RealInput = styled.input`
+  width: 600px;
+  height: 30px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 3px #ddd;
+  border-radius: 4px;
+`
+
+const Website = styled.div`
+  // display: flex;
+  position: center;
+  top: 50%;
+  justify-content: center;
+  align-items: center;
+  position: center;
+`
 export default App;
