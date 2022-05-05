@@ -2,9 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const axios = require('axios')
-// import { writeFileSync, readFileSync } from 'fs';
 const port = process.env.PORT || 3003;
 const app = express();
+const cors = require('cors');
+app.use(cors());
 
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -13,19 +14,18 @@ const pool = require('./db.js')
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  const idiom = req.query.idiom
-  console.log(req.body, 'body')
-  console.log(req, 'this is full req')
+  const idiom_id = req.query.id
 
-  const query = `SELECT * FROM idioms WHERE idiom = ${idiom}`
+  const query = `SELECT * FROM idioms i WHERE id = ${idiom_id}`
   pool
     .query(query)
     .then(data => {
-      console.log(data.rows[0])
+
       res.status(200).send(data.rows[0])
 
     })
-  console.log(req.query)
+    .catch(err => res.status(400).send(err))
+
 
 })
 
@@ -33,3 +33,7 @@ app.get('/', (req, res) => {
 app.listen(port, () => console.log(`listening at http://localhost:${port}`))
 
 module.exports.app = app;
+
+
+
+// postman works get request from port 3003. but axios from front end (2002) does not work. It has an error message, and there's no data.

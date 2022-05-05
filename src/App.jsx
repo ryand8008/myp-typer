@@ -6,6 +6,7 @@ import axios from 'axios';
 
 
 
+
 // a word is averaged to 5 keystrokes
 // (total chars/ 5)/ finishedTime
 
@@ -114,13 +115,14 @@ const saveScore = (e) => {
       'wpm': wpm,
       'accuracy': Math.floor(accuracy)
     }
+    console.log(title)
 
-    axios.get('/', {
+    axios.get(`http://localhost:3003`, {
       params: {
-        'idiom': title
+        'id': idiomNum
       }
     })
-    .then((data) => {
+    .then(({ data }) => {
       console.log(data, 'this is data')
     })
     .catch(err => console.log(err))
