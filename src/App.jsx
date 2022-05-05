@@ -2,22 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import Highlight from './Highlight.jsx';
 import styled from 'styled-components';
 import { idiomList1 } from '../idioms/idiomList1.js'
+import axios from 'axios';
+
+
 
 // a word is averaged to 5 keystrokes
 // (total chars/ 5)/ finishedTime
 
-// const exampleText = 'This is just a test' //19
-// const exampleText = `Barking Up The Wrong Tree Meaning: To make a wrong assumption about something.`
 
 function App() {
 
   // idiom
-  const [idiomNum, setIdiomNum] = useState(5);
+  const [idiomNum, setIdiomNum] = useState(63);
   const title = idiomList1[idiomNum].title;
   const definition = idiomList1[idiomNum].meaning;
   const exampleIdiom = idiomList1[idiomNum].examples[0];
 
-  console.log(idiomNum, title)
   const [text, setText] = useState('');
   const [wpm, setWpm] = useState(0);
   const [timer, setTimer] = useState(0);
@@ -44,7 +44,7 @@ useEffect(() => {
     // setTypeThis(definition)
   }
   if (typeThis !== definition)
-  setTypeThis(exampleIdiom)
+    setTypeThis(exampleIdiom)
 
 }, [finished, typeThis, idiomNum])
 
@@ -102,18 +102,50 @@ const handleExample = (e) => {
   setTimer(0);
   setFinishedTime(0);
   clearInterval(countRef.current);
+}
 
+const saveScore = (e) => {
+  e.preventDefault();
+  // save in db
+  // display on page under <website> box;
+    let stats = {
+      'title': title,
+      'definition': definition,
+      'wpm': wpm,
+      'accuracy': Math.floor(accuracy)
+    }
+
+    axios.get('/', {
+      params: {
+        'idiom': title
+      }
+    })
+    .then((data) => {
+      console.log(data, 'this is data')
+    })
+    .catch(err => console.log(err))
+
+
+  console.log(stats, 'this is stats')
+  console.log('keystrokes: ', wpm, 'accuracy: ', accuracy )
 }
 
 
   return (
-    <>
+
     <Website>
     <Containerbox>
-    <h1>What is an idiom? </h1>
-    <h2>An idiom is a group of words whose meaning is different from the meanings of the individual words -Oxford Dictionary</h2>
+      <h1>What is an idiom? </h1>
+      <h3>An idiom is a group of words whose meaning is different from the meanings of the individual words</h3>
+      <h4>To play the game:</h4>
+        <li>Type either the definition of the idiom or and example of the idiom </li>
+        <li>And see how fast and accurate you can type it!</li>
+        <li>You must type it exactly or it will not be counted as complete</li>
+        <li>The sentence will stay yellow as you type it correctly</li>
 
-      <Textbox>Idiom: {title} </Textbox>
+    <p />
+    <p />
+      <TextIdiom>Idiom: {title} </TextIdiom>
       <Textbox>{typeThis === definition ? `Definition: `  : `Example: `} <Highlight
       text={typeThis} highlight={text} /> </Textbox>
       <Textbox>Input: {finishedTime ? 'Complete!' : text}
@@ -124,16 +156,19 @@ const handleExample = (e) => {
         <label>
           <RealInput type="text" name="typer" value={text} autoComplete="off" onChange={(e) => handleTyping(e)} placeholder="timer starts when you start typing..." />
         </label>
-
+        <Button onClick={(e) => resetButton(e)} >Reset</Button>
       </InputField>
-    <button onClick={(e) => resetButton(e)} >Reset</button><button onClick={(e) => handleExample(e)}>{typeThis === definition ? 'example' : 'definition'}</button><button onClick={(e) => newIdiom(e)}>new idiom</button>
+      <Button onClick={(e) => handleExample(e)}>{typeThis === definition ? 'example' : 'definition'}</Button>
+      <Button onClick={(e) => newIdiom(e)}>new idiom</Button>
     <div>{finishedTime ? `Completed in ${finishedTime} seconds` : `${timer} seconds have elapsed`}</div>
-    <div> Keystrokes => {wpm}  Perfect keystroke count: {typeThis.length}</div>
+    <div> Keystrokes => {wpm} | Perfect keystroke count: {typeThis.length}</div>
     <div>accuracy: {Math.floor(accuracy)}%</div>
     <div>errors: {finishedTime ? wpm-typeThis.length : 0}</div>
+    <Scorebutton onClick={(e) => saveScore(e)}>Submit Scores</Scorebutton>
     </Containerbox>
     </Website>
-    </>
+
+
   )
 }
 
@@ -142,7 +177,18 @@ const Typetext = styled.div`
   font-style: italic;
   padding: 10px, 10px, 10px, 10px;
 `
+
 const Textbox = styled.div`
+// border: 1px solid black;
+border-radius: 5px;
+height: 30px;
+position: center;
+width: fit-content;
+margin: 15px, 15px, 15px, 0px;
+padding: 10px;
+`;
+
+const TextIdiom = styled(Textbox)`
   // border: 1px solid black;
   border-radius: 5px;
   height: 30px;
@@ -150,13 +196,13 @@ const Textbox = styled.div`
   width: fit-content;
   margin: 15px, 15px, 15px, 0px;
   padding: 10px;
-
+  font-weight: bold;
 `
 
 const Containerbox = styled.div`
   border: 2px solid black;
   padding: 20px;
-  width: 800px;
+  width: 850px;
   border-radius: 5px;
   margin: 0 auto;
 `;
@@ -185,5 +231,26 @@ const Website = styled.div`
   justify-content: center;
   align-items: center;
   position: center;
+  background: '#FAF9F6';
 `
+
+const Completed = styled.div`
+  text-color: green;
+`
+
+const Button = styled.button`
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border-radius: 3px;
+`;
+
+const Scorebutton = styled(Button)`
+  position: relative;
+  left: 650px;
+`;
+
+// const Wholepage = styled.body`
+//   background-color: #918f8a;
+// `
 export default App;
