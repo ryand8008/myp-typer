@@ -3676,7 +3676,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 function App() {
-  // idiom
+  var defaultIdiom = {
+    "id": 63,
+    "idiom": "spitting image",
+    "definition": "a precise resemblance, especially in closely related persons.",
+    "keystroke_d": 61,
+    "example": "People have told me that I look like him, act like him, that my kids are the spitting image of him.",
+    "keystroke_e": 99
+  }; // idiom
+
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(63),
       _useState2 = _slicedToArray(_useState, 2),
       idiomNum = _useState2[0],
@@ -3688,38 +3696,43 @@ function App() {
 
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState4 = _slicedToArray(_useState3, 2),
-      text = _useState4[0],
-      setText = _useState4[1];
+      idiom = _useState4[0],
+      setIdiom = _useState4[1];
 
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState6 = _slicedToArray(_useState5, 2),
-      wpm = _useState6[0],
-      setWpm = _useState6[1];
+      text = _useState6[0],
+      setText = _useState6[1];
 
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState8 = _slicedToArray(_useState7, 2),
-      timer = _useState8[0],
-      setTimer = _useState8[1];
+      wpm = _useState8[0],
+      setWpm = _useState8[1];
 
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState10 = _slicedToArray(_useState9, 2),
-      finishedTime = _useState10[0],
-      setFinishedTime = _useState10[1];
+      timer = _useState10[0],
+      setTimer = _useState10[1];
 
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
       _useState12 = _slicedToArray(_useState11, 2),
-      start = _useState12[0],
-      setStart = _useState12[1];
+      finishedTime = _useState12[0],
+      setFinishedTime = _useState12[1];
 
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
       _useState14 = _slicedToArray(_useState13, 2),
-      accuracy = _useState14[0],
-      setAccuracy = _useState14[1];
+      start = _useState14[0],
+      setStart = _useState14[1];
 
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(definition),
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState16 = _slicedToArray(_useState15, 2),
-      typeThis = _useState16[0],
-      setTypeThis = _useState16[1];
+      accuracy = _useState16[0],
+      setAccuracy = _useState16[1];
+
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(definition),
+      _useState18 = _slicedToArray(_useState17, 2),
+      typeThis = _useState18[0],
+      setTypeThis = _useState18[1];
 
   var countRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
   var finished = text === typeThis; //calculate average word => keystroke divded by 5
@@ -3773,7 +3786,17 @@ function App() {
 
   var newIdiom = function newIdiom(e) {
     e.preventDefault();
-    var newNumber = Math.floor(Math.random() * 80);
+    var newNumber = Math.floor(Math.random() * 80); // axios.get(`http://localhost:3003`, {
+    //     params: {
+    //       'id': newNumber
+    //     }
+    //   })
+    //   .then(({ data }) => {
+    //     console.log(data, 'this is data')
+    //     setTypeThis(data.definition)
+    //   })
+    // .catch(err => console.log(err))
+
     setIdiomNum(newNumber);
     setTypeThis(definition);
     setText('');
@@ -3810,21 +3833,30 @@ function App() {
 
     var stats = {
       'title': title,
-      'definition': definition,
       'wpm': wpm,
       'accuracy': Math.floor(accuracy)
     };
-    axios__WEBPACK_IMPORTED_MODULE_3___default().get('/', {
-      params: {
-        'idiom': title
-      }
-    }).then(function (data) {
-      console.log(data, 'this is data');
-    })["catch"](function (err) {
-      return console.log(err);
-    });
-    console.log(stats, 'this is stats');
-    console.log('keystrokes: ', wpm, 'accuracy: ', accuracy);
+
+    if (typeThis === definition) {
+      stats.definition = typeThis;
+    } else {
+      stats.example = typeThis;
+    }
+
+    if (finishedTime) {
+      axios__WEBPACK_IMPORTED_MODULE_3___default().get("http://localhost:3003", {
+        params: {
+          'id': idiomNum
+        }
+      }).then(function (_ref) {
+        var data = _ref.data;
+        console.log(data, 'this is data');
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    } else {
+      alert('you have not completed it yet!');
+    }
   };
 
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(Website, {
@@ -3836,11 +3868,11 @@ function App() {
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
         children: "To play the game:"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("li", {
-        children: "Type either the definition of the idiom or and example of the idiom "
+        children: "Type either the definition of the idiom or example of the idiom "
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("li", {
         children: "And see how fast and accurate you can type it!"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("li", {
-        children: "You must type it exactly or it will not be counted as complete"
+        children: "You must type the sentence exactly or it will not be counted as complete"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("li", {
         children: "The sentence will stay yellow as you type it correctly"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(TextIdiom, {

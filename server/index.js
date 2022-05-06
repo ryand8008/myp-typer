@@ -14,18 +14,47 @@ const pool = require('./db.js')
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  const idiom_id = req.query.id
 
-  const query = `SELECT * FROM idioms i WHERE id = ${idiom_id}`
+  const getScores = req.query.query
+
+
   pool
-    .query(query)
-    .then(data => {
-
-      res.status(200).send(data.rows[0])
+    .query(getScores)
+    .then((data) => {
+      res.status(200).send(data.rows)
 
     })
     .catch(err => res.status(400).send(err))
+})
 
+app.post('/', (req, res) => {
+  console.log(req.body, 'this is body')
+  let idiom_id = req.body.idiom_id;
+  let definition = req.body.definition;
+  let example = req.body.example;
+  let wpm = req.body.wpm;
+  let keystrokes = req.body.keystrokes;
+  let time = req.body.time;
+  let accuracy = req.body.accuracy;
+  let table = '';
+
+
+  if (definition) {
+    table = 'scores_def'
+  } else {
+    table = 'scores_ex'
+  }
+
+  const query = `
+  INSERT INTO ${table}(idiom_id,wpm,accuracy,time,keystrokes)
+  VALUES (${idiom_id}, ${wpm}, ${accuracy}, ${time}, ${keystrokes})`
+
+  pool
+    .query(query)
+    .then(() => {
+      res.status(200).send('score saved!')
+    })
+    .catch(err => console.log(err))
 
 })
 

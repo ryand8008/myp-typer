@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Highlight from './Highlight.jsx';
+import Scoreboard from './Scoreboard.jsx';
 import styled from 'styled-components';
 import { idiomList1 } from '../idioms/idiomList1.js'
 import axios from 'axios';
@@ -13,11 +14,23 @@ import axios from 'axios';
 
 function App() {
 
+  const defaultIdiom = {
+    "id": 63,
+    "idiom": "spitting image",
+    "definition": "a precise resemblance, especially in closely related persons.",
+    "keystroke_d": 61,
+    "example": "People have told me that I look like him, act like him, that my kids are the spitting image of him.",
+    "keystroke_e": 99
+}
+
   // idiom
   const [idiomNum, setIdiomNum] = useState(63);
   const title = idiomList1[idiomNum].title;
   const definition = idiomList1[idiomNum].meaning;
   const exampleIdiom = idiomList1[idiomNum].examples[0];
+
+
+  const [idiom, setIdiom] = useState('')
 
   const [text, setText] = useState('');
   const [wpm, setWpm] = useState(0);
@@ -28,6 +41,8 @@ function App() {
   const [typeThis, setTypeThis] = useState(definition)
   const countRef = useRef(null);
 
+  // which table
+  const [table, setTable] = useState(typeThis === definition)
 
   const finished = (text === typeThis)
   //calculate average word => keystroke divded by 5
@@ -46,6 +61,7 @@ useEffect(() => {
   }
   if (typeThis !== definition)
     setTypeThis(exampleIdiom)
+    setTable(typeThis === exampleIdiom)
 
 }, [finished, typeThis, idiomNum])
 
@@ -109,29 +125,35 @@ const saveScore = (e) => {
   e.preventDefault();
   // save in db
   // display on page under <website> box;
+
     let stats = {
-      'title': title,
-      'definition': definition,
-      'wpm': wpm,
+      'idiom_id': idiomNum,
+      'wpm': rawWpm,
+      'keystrokes': wpm,
+      'time': timer,
       'accuracy': Math.floor(accuracy)
     }
-    console.log(title)
 
-    axios.get(`http://localhost:3003`, {
-      params: {
-        'id': idiomNum
-      }
-    })
-    .then(({ data }) => {
-      console.log(data, 'this is data')
-    })
-    .catch(err => console.log(err))
+    if (typeThis === definition) {
+      stats.definition = typeThis
+      setTable('definition')
+    } else {
+      stats.example = typeThis
+      setTable('example')
+    }
 
+  if (finishedTime) {
+      axios.post(`http://localhost:3003`, stats)
+      .then(({ data }) => {
+        console.log(data, 'this is data')
+      })
+      .catch(err => console.log(err))
+    } else {
+      alert('you have not completed it yet!')
+    }
+  setIdiomNum(idiomNum)
 
-  console.log(stats, 'this is stats')
-  console.log('keystrokes: ', wpm, 'accuracy: ', accuracy )
-}
-
+  }
 
   return (
 
@@ -140,9 +162,9 @@ const saveScore = (e) => {
       <h1>What is an idiom? </h1>
       <h3>An idiom is a group of words whose meaning is different from the meanings of the individual words</h3>
       <h4>To play the game:</h4>
-        <li>Type either the definition of the idiom or and example of the idiom </li>
+        <li>Type either the definition of the idiom or example of the idiom </li>
         <li>And see how fast and accurate you can type it!</li>
-        <li>You must type it exactly or it will not be counted as complete</li>
+        <li>You must type the sentence exactly or it will not be counted as complete</li>
         <li>The sentence will stay yellow as you type it correctly</li>
 
     <p />
@@ -167,6 +189,7 @@ const saveScore = (e) => {
     <div>accuracy: {Math.floor(accuracy)}%</div>
     <div>errors: {finishedTime ? wpm-typeThis.length : 0}</div>
     <Scorebutton onClick={(e) => saveScore(e)}>Submit Scores</Scorebutton>
+    <Scoreboard idiom_id={idiomNum} table={table} idiom={idiomList1[idiomNum]}/>
     </Containerbox>
     </Website>
 
