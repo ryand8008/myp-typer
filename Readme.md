@@ -7,10 +7,11 @@ Hand writing something six times in a row helps reinforce your memories so why n
 How to use:
 
 Install all dependencies
+  -   `npm install`
 
-start webpack => 'yarn dev'
+start webpack => `yarn dev`
 
-start client => 'npm run client-dev'
+start client => `npm run client-dev`
 
 tech stack:
   - react with hooks
