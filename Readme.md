@@ -2,8 +2,7 @@ Have you ever tried learning a new language? Did you ever come across a group of
 
 Hand writing something six times in a row helps reinforce your memories so why not typing it 6+ times in a row?
 
-*gif*
-
+<a href="https://imgur.com/k3jb7U0"><img src="https://i.imgur.com/k3jb7U0.gif" title="source: imgur.com" /></a>
 
 How to use:
 
