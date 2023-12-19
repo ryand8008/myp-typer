@@ -21,4 +21,4 @@ tech stack:
   - express
   - axios
   - postgres
-    - got idioms from another api and ELT in to my own db
+    - got idioms and ELT in to my own db
